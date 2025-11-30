@@ -57,7 +57,7 @@ public sealed class Archetype
     /// <summary>
     /// Maps component types to their respective stores.
     /// </summary>
-    private readonly Dictionary<Type, object> _componentStores;
+    private readonly Dictionary<Type, IComponentStore> _componentStores;
 
     /// <summary>
     /// Maps entities to their indices in the entity list and component stores.
@@ -77,7 +77,7 @@ public sealed class Archetype
     {
         _componentTypes = new HashSet<Type>(types);
         _entities = new List<Entity.Entity>(DefaultInitialCapacity);
-        _componentStores = new Dictionary<Type, object>();
+        _componentStores = new Dictionary<Type, IComponentStore>();
         _entityToIndex = new Dictionary<Entity.Entity, int>();
         _key = new ArchetypeKey(_componentTypes);
 
@@ -85,7 +85,7 @@ public sealed class Archetype
         foreach (var type in _componentTypes)
         {
             var storeType = typeof(ComponentStore<>).MakeGenericType(type);
-            var store = Activator.CreateInstance(storeType, DefaultInitialCapacity)!;
+            var store = (IComponentStore)Activator.CreateInstance(storeType, DefaultInitialCapacity)!;
             _componentStores[type] = store;
         }
     }
@@ -289,47 +289,42 @@ public sealed class Archetype
     }
 
     /// <summary>
-    /// Adds a component to its store using reflection.
+    /// Adds a component to its store.
     /// </summary>
     private void AddComponentToStore(Type type, object component)
     {
         var store = _componentStores[type];
-        var addMethod = store.GetType().GetMethod("Add")!;
-        addMethod.Invoke(store, new[] { component });
+        store.AddBoxed(component);
     }
 
     /// <summary>
-    /// Gets a component from its store using reflection.
+    /// Gets a component from its store.
     /// </summary>
     private object GetComponentFromStore(Type type, int index)
     {
         var store = _componentStores[type];
-        var getMethod = store.GetType().GetMethod("Get")!;
-        return getMethod.Invoke(store, new object[] { index })!;
+        return store.GetBoxed(index);
     }
 
     /// <summary>
-    /// Performs swap-and-pop removal in a component store using reflection.
+    /// Performs swap-and-pop removal in a component store.
     /// </summary>
     private void SwapPopComponentInStore(Type type, int index)
     {
         var store = _componentStores[type];
-        var removeMethod = store.GetType().GetMethod("RemoveSwapPop")!;
-        removeMethod.Invoke(store, new object[] { index });
+        store.RemoveSwapPopBoxed(index);
     }
 
     /// <summary>
-    /// Pops the last component from a store using reflection.
+    /// Pops the last component from a store.
     /// </summary>
     private void PopComponentFromStore(Type type)
     {
         var store = _componentStores[type];
-        var sizeProperty = store.GetType().GetProperty("Size")!;
-        int size = (int)sizeProperty.GetValue(store)!;
+        int size = store.Size;
         if (size > 0)
         {
-            var removeMethod = store.GetType().GetMethod("RemoveSwapPop")!;
-            removeMethod.Invoke(store, new object[] { size - 1 });
+            store.RemoveSwapPopBoxed(size - 1);
         }
     }
 }

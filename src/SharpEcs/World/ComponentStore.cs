@@ -39,7 +39,7 @@ namespace SharpEcs.World;
 /// }
 /// </code>
 /// </example>
-public sealed class ComponentStore<T> where T : struct
+public sealed class ComponentStore<T> : IComponentStore where T : struct
 {
     /// <summary>
     /// The default initial capacity for new component stores.
@@ -221,4 +221,32 @@ public sealed class ComponentStore<T> where T : struct
         int newCapacity = Math.Max(requiredCapacity, (int)(_data.Length * GrowthFactor));
         Array.Resize(ref _data, newCapacity);
     }
+
+    #region IComponentStore Implementation
+
+    /// <inheritdoc/>
+    int IComponentStore.AddBoxed(object component)
+    {
+        return Add((T)component);
+    }
+
+    /// <inheritdoc/>
+    object IComponentStore.GetBoxed(int index)
+    {
+        return Get(index);
+    }
+
+    /// <inheritdoc/>
+    void IComponentStore.SetBoxed(int index, object component)
+    {
+        Set(index, (T)component);
+    }
+
+    /// <inheritdoc/>
+    object IComponentStore.RemoveSwapPopBoxed(int index)
+    {
+        return RemoveSwapPop(index);
+    }
+
+    #endregion
 }
