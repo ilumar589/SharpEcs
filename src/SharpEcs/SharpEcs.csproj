@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>latest</LangVersion>
+    
+    <!-- NuGet Package Metadata -->
+    <PackageId>SharpEcs</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Eduard Parvu</Authors>
+    <Company>SharpEcs</Company>
+    <Product>SharpEcs</Product>
+    <Description>High-performance C# ECS library with value types, ref returns, and zero-allocation design. A C# port of JEcs with significant performance improvements using C#-specific features.</Description>
+    <PackageTags>ecs;entity-component-system;gamedev;performance;value-types</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/ilumar589/SharpEcs</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/ilumar589/SharpEcs</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    
+    <!-- Documentation -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\SharpEcs.xml</DocumentationFile>
+  </PropertyGroup>
+
+</Project>
